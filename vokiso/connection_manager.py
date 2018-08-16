@@ -15,24 +15,24 @@ class DirectConnection:
         upnp.discover()
         upnp.selectigd()
 
-        local_host = upnp.lanaddr
-        external_host = ipgetter.myip()
+        self.local_host = upnp.lanaddr
+        self.external_host = ipgetter.myip()
 
-        local_port = 4455
-        external_port = 43210
+        self.local_port = 4455
+        self.external_port = 43210
 
         while True:
-            upnp.addportmapping(external_port, 'TCP', local_host, local_port, 'Vokiso', '')
+            upnp.addportmapping(self.external_port, 'TCP', self.local_host, self.local_port,
+                                'Vokiso', '')
             try:
                 self.sock = mesh.MeshSocket(
-                    local_host, local_port, out_addr=(external_host, external_port)
+                    self.local_host, self.local_port, out_addr=(self.external_host,
+                                                                self.external_port)
                 )
             except OSError:
-                local_port += 1
-                external_port += 1
+                self.local_port += 1
+                self.external_port += 1
                 continue
-            print('Listening on {}:{}...'.format(local_host, local_port))
-            print('Also listening on {}:{}...'.format(external_host, external_port))
             break
 
         self.connected_event = Event()

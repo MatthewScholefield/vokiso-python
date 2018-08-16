@@ -1,14 +1,25 @@
 import json
+from difflib import SequenceMatcher
 
 from vokiso.audio_manager import AudioManager
 from vokiso.connection_manager import DirectConnection
 from vokiso.ui_manager import UiManager
+from vokiso.word_encoder import load_words, from_pairing_code, to_pairing_code
 
 
 def ask_to_connect(conn: DirectConnection):
-    input_str = input('Enter ip address to connect to: ')
-    if input_str:
-        ip, port = input_str.split(':')
+    code = input('Enter pairing code or nothing to wait for someone else to connect: ')
+
+    if code:
+        words = []
+        valid_words = load_words()
+        for word in code.split():
+            if word not in valid_words:
+                word = max(valid_words, key=lambda x: SequenceMatcher(a=word, b=x).ratio())
+            words.append(word)
+        address = from_pairing_code(' '.join(words))
+
+        ip, port = address.split(':')
         port = int(port)
         conn.connect(ip, port)
         return ip, port
@@ -20,6 +31,8 @@ def ask_to_connect(conn: DirectConnection):
 
 def main():
     conn = DirectConnection()
+    address = '{}:{}'.format(conn.external_host, conn.external_port)
+    print('Your pairing code is: ' + to_pairing_code(address))
     ip, port = ask_to_connect(conn)
     print('Connected!')
 
