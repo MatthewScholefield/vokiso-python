@@ -1,0 +1,9 @@
+hg+https://bitbucket.org/MatthewScholefield/py-al@fix_loaders#egg=PyAL
+pygame
+git+https://github.com/MatthewScholefield/py2p#egg=py2p
+pyaudio
+numpy
+sonopy
+miniupnpc
+ipgetter
+pygame
